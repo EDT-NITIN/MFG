@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4592404974340275"
+     crossorigin="anonymous"></script>
+
+     <script async
+src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+crossorigin="anonymous"></script>
+
+
+
+  <title>Level Devil - Endless Hard Levels</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: none;
+    }
+
+    /* LOADING SCREEN */
+    #loadingScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #111;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      z-index: 1000;
+      transition: opacity 0.6s ease;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      font-size: 24px;
+      letter-spacing: 1px;
+      text-align: center;
+    }
+
+    .info {
+      margin-bottom: 10px;
+      font-size: 14px;
+      opacity: 0.9;
+      text-align: center;
+      padding: 0 10px;
+    }
+
+    /* --------- SCREENS / PAGES --------- */
+    .screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding-top: 20px;
+      width: 100%;
+      max-width: 900px;
+      position: relative;       /* for background overlay */
+      overflow: hidden;
+    }
+    .screen.active {
+      display: flex;
+    }
+
+    /* ---------- PAGE TRANSITION FADE ---------- */
+    .fade {
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .fade.show {
+      opacity: 1;
+    }
+
+    /* ------- MENU (PAGE 1) ------- */
+    .menu {
+      margin-bottom: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+      max-width: 800px;
+      width: 100%;
+    }
+
+    .menu-row {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .menu button {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: none;
+      font-size: 13px;
+      background: #00b894;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .menu button:hover {
+      background: #00e6b4;
+    }
+
+    .menu-hint {
+      font-size: 12px;
+      opacity: 0.8;
+      text-align: center;
+    }
+
+    /* ------- GAME (PAGE 2) ------- */
+    /* PAGE 2 BACKGROUND IMAGE */
+    #screenGame::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: url("game-bg.jpg") center/cover no-repeat;
+      opacity: 0.35;          /* dark + see content */
+      z-index: -1;
+    }
+
+    canvas {
+      border: 2px solid #555;
+      background: rgba(0, 0, 0, 0.7);  /* thoda dark so BG visible but game clear */
+      display: block;
+      width: 100%;
+      max-width: 800px;
+      height: auto;
+      touch-action: none;
+    }
+
+    .status {
+      margin-top: 10px;
+      font-size: 16px;
+      min-height: 20px;
+      text-align: center;
+      padding: 0 10px;
+    }
+
+    .top-bar {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      padding: 0 4px;
+      font-size: 13px;
+      opacity: 0.9;
+    }
+
+    .top-bar button {
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: none;
+      background: #00b894;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .top-bar button:hover {
+      background: #00e6b4;
+    }
+
+    /* ------- MOBILE TOUCH CONTROLS (GAME PAGE) ------- */
+    .touch-controls {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 40vh;
+      max-height: 220px;
+      pointer-events: none;
+      display: none;
+      z-index: 10;
+    }
+
+    .touch-left,
+    .touch-right {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 50%;
+      pointer-events: none;
+    }
+
+    .touch-left {
+      left: 0;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      padding-left: 16px;
+    }
+
+    .touch-right {
+      right: 0;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding-right: 16px;
+    }
+
+    .joystick-base {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.35);
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      position: relative;
+      pointer-events: auto;
+      touch-action: none;
+      backdrop-filter: blur(3px);
+    }
+
+    .joystick-knob {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.4);
+      border: 2px solid rgba(0, 0, 0, 0.3);
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .jump-btn {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: rgba(0, 255, 153, 0.55);
+      border: 2px solid rgba(0, 0, 0, 0.4);
+      pointer-events: auto;
+      touch-action: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 16px;
+      color: #000;
+      user-select: none;
+      backdrop-filter: blur(3px);
+    }
+
+    .jump-btn:active {
+      background: rgba(0, 255, 153, 0.8);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* ------- RETRY / OLD LEVEL (PAGE 3) ------- */
+    .retry-container {
+      padding: 20px 12px;
+      background: #1a1a1a;
+      border-radius: 10px;
+      border: 1px solid #333;
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .retry-title {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .retry-text {
+      font-size: 14px;
+      opacity: 0.9;
+      margin-bottom: 16px;
+    }
+
+    .retry-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .retry-buttons button {
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: none;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: #00b894;
+      color: #000;
+    }
+
+    .btn-primary:hover {
+      background: #00e6b4;
+    }
+
+    .btn-secondary {
+      background: #555;
+      color: #fff;
+    }
+
+    .btn-secondary:hover {
+      background: #777;
+    }
+
+
+
+    /* ---------- LEVEL TRANSITION BANNER ---------- */
+    #levelBanner {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.8);
+      padding: 14px 26px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.85);
+      border: 2px solid #00ff99;
+      color: #00ffcc;
+      font-size: 22px;
+      font-weight: bold;
+      font-family: Arial, sans-serif;
+      text-shadow: 0 0 8px #00ffcc;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 999;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    #levelBanner.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    @media (max-width: 900px) {
+      .touch-controls.show {
+        display: block;
+      }
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 20px;
+      }
+      .info {
+        font-size: 12px;
+      }
+      .status {
+        font-size: 14px;
+      }
+    }
+  </style>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4592404974340275"
+     crossorigin="anonymous"></script>
+</head>
+<body>
+
+
+  <ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+     data-ad-slot="1234567890"
+     data-ad-format="auto"></ins>
+
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+
+
+  <!-- LOADING SCREEN -->
+  <div id="loadingScreen">Loading...</div>
+
+  <!-- LEVEL TRANSITION BANNER -->
+  <div id="levelBanner">LEVEL 1</div>
+
+  <!-- PAGE 1: MENU -->
+  <div id="screenMenu" class="screen fade active show">
+    <h1>Level Devil – Endless Hard Levels</h1>
+    <div class="info">
+      Page 1 – Main Menu<br />
+      Play, Quest, Credits, Settings, Sound
+    </div>
+
+    <div class="menu" id="menuPanel">
+      <div class="menu-row">
+        <button id="btnPlay">▶ Play</button>
+        <button id="btnQuest">Quest</button>
+        <button id="btnCredits">Credits</button>
+      </div>
+      <div class="menu-row">
+        <button id="btnSettings">Settings</button>
+        <button id="btnSound">🔊 Sound: ON</button>
+        <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.5" style="width: 100px; margin-left: 10px;">
+      </div>
+
+      <p class="menu-hint">
+        Current Level: <span id="currentLevelText">1</span><br />
+        Levels auto unlock: 1 → 2 → 3 → ... (endless)<br />
+        Press <b>Play</b> to start latest unlocked level.
+      </p>
+    </div>
+
+    <div class="status" id="menuStatus"></div>
+  </div>
+
+  <!-- PAGE 2: GAME -->
+  <div id="screenGame" class="screen fade">
+    <h1>Level Devil – Gameplay</h1>\
+    <div class="info">
+      Page 2 – Game Play<br />
+      Controls: <b>A / D</b> or <b>Joystick</b> = Left/Right, <b>W / Space / Jump</b> = Jump.
+    </div>
+
+    <div class="top-bar">
+      <span id="topLevelInfo">Level ?</span>
+      <button id="btnBackToMenu">⏹ Menu</button>
+    </div>
+
+    <canvas id="game" width="800" height="450"></canvas>
+    <div class="status" id="gameStatus"></div>
+
+    <div class="touch-controls" id="touchControls">
+      <div class="touch-left">
+        <div class="joystick-base" id="joystickBase">
+          <div class="joystick-knob" id="joystickKnob"></div>
+        </div>
+      </div>
+      <div class="touch-right">
+        <div class="jump-btn" id="jumpBtn">JUMP</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 3: RETRY -->
+  <div id="screenRetry" class="screen fade">
+    <h1>Level Devil – Retry</h1>
+    <div class="info">
+      Page 3 – Retry / Old Level<br />
+      Yaha se tum same level dobara khel sakte ho ya menu pe ja sakte ho.
+    </div>
+
+    <div class="retry-container">
+      <div class="retry-title" id="retryTitle">You Died!</div>
+      <div class="retry-text" id="retryText">
+        You hit spikes or fell down. Kya karna hai?
+      </div>
+      <div class="retry-buttons">
+        <button id="btnRetryLevel" class="btn-primary">Retry This Level</button>
+        <button id="btnGoToMenu" class="btn-secondary">Back to Menu</button>
+      </div>
+    </div>
+
+    <div class="status" id="retryStatus"></div>
+  </div>
+
+  <audio id="bgMusic" src="Dark Horror Trailer - No Copyright - THRLL.mp3" loop preload="auto"></audio>
+
+  <script>
+
+
+    const screenMenu = document.getElementById("screenMenu");
+    const screenGame = document.getElementById("screenGame");
+    const screenRetry = document.getElementById("screenRetry");
+
+    const menuStatus = document.getElementById("menuStatus");
+    const gameStatus = document.getElementById("gameStatus");
+    const retryStatus = document.getElementById("retryStatus");
+
+    const btnPlay = document.getElementById("btnPlay");
+    const btnQuest = document.getElementById("btnQuest");
+    const btnCredits = document.getElementById("btnCredits");
+    const btnSettings = document.getElementById("btnSettings");
+    const btnSound = document.getElementById("btnSound");
+    const btnBackToMenu = document.getElementById("btnBackToMenu");
+
+    const btnRetryLevel = document.getElementById("btnRetryLevel");
+    const btnGoToMenu = document.getElementById("btnGoToMenu");
+    const retryTitle = document.getElementById("retryTitle");
+    const retryText = document.getElementById("retryText");
+
+    const topLevelInfo = document.getElementById("topLevelInfo");
+    const currentLevelText = document.getElementById("currentLevelText");
+
+    const canvas = document.getElementById("game");
+    const ctx = canvas.getContext("2d");
+
+    const touchControls = document.getElementById("touchControls");
+    const joystickBase = document.getElementById("joystickBase");
+    const joystickKnob = document.getElementById("joystickKnob");
+    const jumpBtn = document.getElementById("jumpBtn");
+
+    const levelBanner = document.getElementById("levelBanner");
+    const bgMusic = document.getElementById("bgMusic");
+    const volumeSlider = document.getElementById("volumeSlider");
+
+    const WIDTH = canvas.width;
+    const HEIGHT = canvas.height;
+
+    let currentScreen = "menu";
+
+    function setScreen(name) {
+      document.querySelectorAll(".screen").forEach(s => s.classList.remove("show"));
+
+      setTimeout(() => {
+        currentScreen = name;
+
+        screenMenu.classList.remove("active");
+        screenGame.classList.remove("active");
+        screenRetry.classList.remove("active");
+
+        if (name === "menu") screenMenu.classList.add("active");
+        if (name === "game") screenGame.classList.add("active");
+        if (name === "retry") screenRetry.classList.add("active");
+
+        setTimeout(() => {
+          const active = document.querySelector(".screen.active");
+          if (active) active.classList.add("show");
+        }, 20);
+
+        if (name === "game") {
+          touchControls.classList.add("show");
+          if (soundOn) {
+            bgMusic.play().catch(e => console.log("Audio play failed:", e));
+          }
+        } else {
+          touchControls.classList.remove("show");
+        }
+      }, 80);
+    }
+
+    function showLevelBanner(text) {
+      levelBanner.textContent = text;
+      levelBanner.classList.add("show");
+      setTimeout(() => {
+        levelBanner.classList.remove("show");
+      }, 900);
+    }
+
+    const player = {
+      x: 50,
+      y: 350,
+      w: 32,
+      h: 32,
+      vx: 0,
+      vy: 0,
+      speed: 4,
+      jumpPower: 11,
+      onGround: false
+    };
+
+    const gravity = 0.6;
+    const friction = 0.8;
+
+    // Endless levels (no TOTAL_LEVELS limit)
+    let levels = [];                 // array of generated levels
+    let highestUnlockedLevel = 1;    // 1,2,3,... endless
+    let selectedMenuLevel = 1;
+    let currentLevelIndex = 0;       // 0-based index
+
+    let platforms = [];
+    let spikes = [];
+    let goal = { x: 0, y: 0, w: 0, h: 0 };
+
+    let keys = {};
+    let gameOver = false;
+
+    // Joystick
+    let joystickActive = false;
+    let joystickStartX = 0;
+    let joystickStartY = 0;
+    let joystickValueX = 0;
+    const joystickMaxDist = 45;
+
+    // Jump
+    let touchJumpPressed = false;
+    let lastJumpPressed = false;
+
+    // Music / sound enabled by default
+    let soundOn = true;
+    btnSound.textContent = "🔊 Sound: ON";
+
+    function toggleSound() {
+      soundOn = !soundOn;
+      btnSound.textContent = soundOn ? "🔊 Sound: ON" : "🔇 Sound: OFF";
+      if (soundOn) {
+        bgMusic.volume = volumeSlider.value;
+        bgMusic.play().catch(e => console.log("Audio play failed:", e));
+      } else {
+        bgMusic.pause();
+      }
+    }
+    btnSound.addEventListener("click", toggleSound);
+
+    // Volume slider
+    volumeSlider.addEventListener("input", () => {
+      bgMusic.volume = volumeSlider.value;
+    });
+    bgMusic.volume = volumeSlider.value;
+
+    // Current level text in menu
+    function updateCurrentLevelText() {
+      if (currentLevelText) {
+        currentLevelText.textContent = highestUnlockedLevel;
+      }
+    }
+
+    // -------- SINGLE LEVEL GENERATOR (endless) --------
+    function generateLevel(levelNumber) {
+      const floor = { x: 0, y: 400, w: 800, h: 50 };
+      const platforms = [floor];
+
+      // difficulty factor 0..1 (clamped after ~50)
+      const t = Math.min(1, (levelNumber - 1) / 50);
+      const base = 0.3 + 0.7 * t;
+      const diff = Math.pow(base, 1.6);
+
+      const stepCount = 4 + Math.floor(diff * 6);
+      const platformWidth = 120 - Math.floor(diff * 60);
+      const baseY = 340 - Math.floor(diff * 70);
+      const stepGapX = 90 + Math.floor(diff * 90);
+      const verticalStep = 30 + Math.floor(diff * 40);
+
+      for (let s = 0; s < stepCount; s++) {
+        const px = 120 + s * stepGapX + (levelNumber % 4) * 3;
+        const pattern = s % 3;
+        const py = baseY - pattern * verticalStep;
+
+        platforms.push({
+          x: px,
+          y: py,
+          w: platformWidth,
+          h: 20
+        });
+      }
+
+      const spikes = [];
+      let groundSpikeCount = 4 + Math.floor(diff * 10);
+      const spikeStart = 130;
+      const spikeGap = 55 - Math.floor(diff * 15);
+
+      for (let k = 0; k < groundSpikeCount; k++) {
+        const sx = spikeStart + k * spikeGap + (levelNumber * 4) % 25;
+
+        if (levelNumber === 1 && sx < 200) continue;
+
+        if (sx + 40 < WIDTH - 40) {
+          spikes.push({
+            x: sx,
+            y: 380,
+            w: 40,
+            h: 20
+          });
+        }
+      }
+
+      for (let s = 1; s < platforms.length; s++) {
+        const p = platforms[s];
+
+        let topChance   = 0.25 + diff * 0.4;
+        let edgeChance  = 0.2  + diff * 0.5;
+        let floatChance = 0.15 + diff * 0.35;
+
+        if (levelNumber === 1) {
+          topChance *= 0.6;
+          edgeChance *= 0.6;
+          floatChance *= 0.4;
+        }
+
+        if (Math.random() < topChance) {
+          spikes.push({
+            x: p.x + p.w * (0.2 + Math.random() * 0.6),
+            y: p.y - 18,
+            w: 30,
+            h: 18
+          });
+        }
+
+        if (Math.random() < edgeChance) {
+          spikes.push({
+            x: p.x + 3,
+            y: p.y - 18,
+            w: 26,
+            h: 18
+          });
+        }
+
+        if (Math.random() < edgeChance) {
+          spikes.push({
+            x: p.x + p.w - 29,
+            y: p.y - 18,
+            w: 26,
+            h: 18
+          });
+        }
+
+        if (Math.random() < floatChance) {
+          const fx = p.x + p.w * (0.25 + Math.random() * 0.5);
+          const fy = p.y + 40 + Math.random() * 60;
+          spikes.push({
+            x: fx,
+            y: fy,
+            w: 30,
+            h: 18
+          });
+        }
+      }
+
+      const lastPlat = platforms[platforms.length - 1];
+      const goal = {
+        x: lastPlat.x + lastPlat.w / 2 - 20,
+        y: lastPlat.y - 60,
+        w: 40,
+        h: 60
+      };
+
+      spikes.push({
+        x: goal.x,
+        y: goal.y + goal.h,
+        w: 40,
+        h: 20
+      });
+
+      return {
+        name: "Level " + levelNumber,
+        spawn: { x: 40, y: 350 },
+        platforms,
+        spikes,
+        goal
+      };
+    }
+
+    function getLevel(levelIndex) {
+      if (!levels[levelIndex]) {
+        const levelNumber = levelIndex + 1;
+        levels[levelIndex] = generateLevel(levelNumber);
+      }
+      return levels[levelIndex];
+    }
+
+    function loadLevel(index, showBanner = true) {
+      const level = getLevel(index);
+      currentLevelIndex = index;
+
+      platforms = level.platforms.map(p => ({ ...p }));
+      spikes = level.spikes.map(s => ({ ...s }));
+      goal = { ...level.goal };
+
+      player.x = level.spawn.x;
+      player.y = level.spawn.y;
+      player.vx = 0;
+      player.vy = 0;
+      player.onGround = false;
+
+      gameOver = false;
+
+      const levelNum = currentLevelIndex + 1;
+      topLevelInfo.textContent = "Level " + levelNum;
+      gameStatus.textContent =
+        level.name + " – endless hard jumps & spikes 🔥";
+
+      if (showBanner) {
+        showLevelBanner("LEVEL " + levelNum);
+      }
+    }
+
+    function resetPlayer() {
+      const level = getLevel(currentLevelIndex);
+      player.x = level.spawn.x;
+      player.y = level.spawn.y;
+      player.vx = 0;
+      player.vy = 0;
+      player.onGround = false;
+      gameOver = false;
+      gameStatus.textContent =
+        level.name + " – Try again, it's hard!";
+      showLevelBanner("RETRY LEVEL " + (currentLevelIndex + 1));
+    }
+
+    // INPUT
+    window.addEventListener("keydown", (e) => {
+      keys[e.key.toLowerCase()] = true;
+      if (e.key === "Escape") {
+        setScreen("menu");
+        menuStatus.textContent = "Back to main menu.";
+      }
+    });
+
+    window.addEventListener("keyup", (e) => {
+      keys[e.key.toLowerCase()] = false;
+    });
+
+    // MENU BUTTONS
+    btnPlay.addEventListener("click", () => {
+      selectedMenuLevel = highestUnlockedLevel;
+      loadLevel(selectedMenuLevel - 1);
+      setScreen("game");
+    });
+
+    btnQuest.addEventListener("click", () => {
+      menuStatus.textContent =
+        "QUEST – Har level me green gate tak pahuchna bina spikes ko chhuye.";
+    });
+
+    btnCredits.addEventListener("click", () => {
+      menuStatus.textContent =
+        "CREDITS – Game by EDT-NITIN";
+    });
+
+    btnSettings.addEventListener("click", () => {
+      menuStatus.textContent =
+        "SETTINGS – Music/Sound buttons se audio on/off karo. Aur options baad me add kar sakte hain.";
+    });
+
+    btnBackToMenu.addEventListener("click", () => {
+      setScreen("menu");
+      menuStatus.textContent = "Back to menu from gameplay.";
+    });
+
+    // RETRY PAGE
+    btnRetryLevel.addEventListener("click", () => {
+      resetPlayer();
+      setScreen("game");
+      retryStatus.textContent = "";
+    });
+
+    btnGoToMenu.addEventListener("click", () => {
+      setScreen("menu");
+      retryStatus.textContent = "Back to main menu.";
+    });
+
+    // COLLISION
+    function rectIntersect(a, b) {
+      return (
+        a.x < b.x + b.w &&
+        a.x + a.w > b.x &&
+        a.y < b.y + b.h &&
+        a.y + a.h > b.y
+      );
+    }
+
+    function resolveCollisions(horizontal) {
+      for (const p of platforms) {
+        if (rectIntersect(player, p)) {
+          if (horizontal) {
+            if (player.vx > 0) {
+              player.x = p.x - player.w;
+            } else if (player.vx < 0) {
+              player.x = p.x + p.w;
+            }
+            player.vx = 0;
+          } else {
+            if (player.vy > 0) {
+              player.y = p.y - player.h;
+              player.vy = 0;
+              player.onGround = true;
+            } else if (player.vy < 0) {
+              player.y = p.y + p.h;
+              player.vy = 0;
+            }
+          }
+        }
+      }
+    }
+
+    // TOUCH
+    function getTouchPos(touch, elem) {
+      const rect = elem.getBoundingClientRect();
+      return {
+        x: touch.clientX - rect.left,
+        y: touch.clientY - rect.top
+      };
+    }
+
+    joystickBase.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      const touch = e.touches[0];
+      const pos = getTouchPos(touch, joystickBase);
+      joystickStartX = pos.x;
+      joystickStartY = pos.y;
+      joystickActive = true;
+    }, { passive: false });
+
+    joystickBase.addEventListener("touchmove", (e) => {
+      e.preventDefault();
+      if (!joystickActive) return;
+      const touch = e.touches[0];
+      const pos = getTouchPos(touch, joystickBase);
+
+      let dx = pos.x - joystickStartX;
+      let dy = pos.y - joystickStartY;
+
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist > joystickMaxDist) {
+        const ratio = joystickMaxDist / dist;
+        dx *= ratio;
+        dy *= ratio;
+      }
+
+      joystickKnob.style.transform =
+        `translate(${dx}px, ${dy}px) translate(-50%, -50%)`;
+
+      joystickValueX = dx / joystickMaxDist;
+    }, { passive: false });
+
+    function resetJoystick() {
+      joystickActive = false;
+      joystickValueX = 0;
+      joystickKnob.style.transform = "translate(-50%, -50%)";
+    }
+
+    joystickBase.addEventListener("touchend", (e) => {
+      e.preventDefault();
+      if (e.touches.length === 0) {
+        resetJoystick();
+      }
+    }, { passive: false });
+
+    joystickBase.addEventListener("touchcancel", (e) => {
+      e.preventDefault();
+      resetJoystick();
+    }, { passive: false });
+
+    jumpBtn.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      touchJumpPressed = true;
+    }, { passive: false });
+
+    jumpBtn.addEventListener("touchend", (e) => {
+      e.preventDefault();
+      touchJumpPressed = false;
+    }, { passive: false });
+
+    jumpBtn.addEventListener("touchcancel", (e) => {
+      e.preventDefault();
+      touchJumpPressed = false;
+    }, { passive: false });
+
+    // UPDATE
+    function update() {
+      if (currentScreen === "menu") return;
+
+      if (currentScreen === "retry") {
+        if (keys["r"]) {
+          resetPlayer();
+          setScreen("game");
+        }
+        return;
+      }
+
+      if (currentScreen !== "game") return;
+
+      let movingLeft =
+        keys["arrowleft"] || keys["a"] || keys["j"];
+      let movingRight =
+        keys["arrowright"] || keys["d"] || keys["l"];
+
+      if (Math.abs(joystickValueX) > 0.15) {
+        movingLeft = joystickValueX < -0.15;
+        movingRight = joystickValueX > 0.15;
+      }
+
+      if (movingLeft && !movingRight) {
+        player.vx = -player.speed;
+      } else if (movingRight && !movingLeft) {
+        player.vx = player.speed;
+      } else {
+        player.vx *= friction;
+        if (Math.abs(player.vx) < 0.05) player.vx = 0;
+      }
+
+      let keyboardJump =
+        keys[" "] || keys["arrowup"] || keys["w"] || keys["k"];
+      let jumpPressed = keyboardJump || touchJumpPressed;
+
+      if (jumpPressed && !lastJumpPressed && player.onGround) {
+        player.vy = -player.jumpPower;
+        player.onGround = false;
+      }
+      lastJumpPressed = jumpPressed;
+
+      player.vy += gravity;
+      if (player.vy > 20) player.vy = 20;
+
+      player.x += player.vx;
+      resolveCollisions(true);
+
+      player.y += player.vy;
+      player.onGround = false;
+      resolveCollisions(false);
+
+      for (const spike of spikes) {
+        if (rectIntersect(player, spike)) {
+          gameOver = true;
+          break;
+        }
+      }
+
+      if (player.y > HEIGHT + 200) {
+        gameOver = true;
+      }
+
+      if (gameOver) {
+        const levelNum = currentLevelIndex + 1;
+        retryTitle.textContent = "You Died on Level " + levelNum + "!";
+        retryText.textContent =
+          "Spikes ya pit me gir gaye. Retry karna hai ya menu pe jana hai?";
+        setScreen("retry");
+        return;
+      }
+
+      // Goal reached → unlock next level & go next (endless)
+      if (!gameOver && rectIntersect(player, goal)) {
+        const justClearedLevel = currentLevelIndex + 1;
+        const nextLevel = justClearedLevel + 1;
+
+        if (nextLevel > highestUnlockedLevel) {
+          highestUnlockedLevel = nextLevel;
+          updateCurrentLevelText();
+        }
+
+        loadLevel(currentLevelIndex + 1); // always next, no end
+      }
+    }
+
+    // DRAW
+    function draw() {
+      if (currentScreen !== "game" && currentScreen !== "retry") {
+        return;
+      }
+
+      ctx.clearRect(0, 0, WIDTH, HEIGHT);
+
+      ctx.fillStyle = "#333";
+      for (const p of platforms) {
+        ctx.fillRect(p.x, p.y, p.w, p.h);
+      }
+
+      for (const s of spikes) {
+        ctx.fillStyle = "#550000";
+        ctx.fillRect(s.x, s.y, s.w, s.h);
+
+        ctx.beginPath();
+        ctx.moveTo(s.x, s.y + s.h);
+        ctx.lineTo(s.x + s.w / 2, s.y);
+        ctx.lineTo(s.x + s.w, s.y + s.h);
+        ctx.closePath();
+        ctx.fillStyle = "#ff4444";
+        ctx.fill();
+      }
+
+      let glow = Math.sin(Date.now() / 200) * 0.5 + 0.5;
+      ctx.fillStyle = `rgba(0, 255, 150, ${0.4 + glow * 0.4})`;
+      ctx.fillRect(goal.x - 5, goal.y - 5, goal.w + 10, goal.h + 10);
+      ctx.fillStyle = "#00ff99";
+      ctx.fillRect(goal.x, goal.y, goal.w, goal.h);
+
+      ctx.fillStyle = "#ffd700";
+      ctx.fillRect(player.x, player.y, player.w, player.h);
+
+      ctx.fillStyle = "#000";
+      const eyeOffsetX = player.vx >= 0 ? 18 : 6;
+      ctx.fillRect(player.x + eyeOffsetX, player.y + 10, 4, 4);
+      ctx.fillRect(player.x + eyeOffsetX - 8, player.y + 10, 4, 4);
+    }
+
+    function loop() {
+      update();
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    // INIT
+    loadLevel(0, false);
+    updateCurrentLevelText();
+    menuStatus.textContent = "MENU – Play dabao, Level 1 se start hoga (endless).";
+    requestAnimationFrame(loop);
+
+    // Hide loading screen after a short delay
+    setTimeout(() => {
+      const loadingScreen = document.getElementById("loadingScreen");
+      loadingScreen.style.opacity = "0";
+      setTimeout(() => {
+        loadingScreen.style.display = "none";
+      }, 600); // Match the transition duration
+    }, 1500); // Show for 1.5 seconds
+
+    
+  </script>
+</body>
+</html>
+
